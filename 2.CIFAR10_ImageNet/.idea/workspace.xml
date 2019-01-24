@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="91038de0-7b8a-43b1-98bf-60c9019eab0a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CIFAR10_data_read/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CIFAR10_data_read/cifar10_data_read.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../README.md" afterDir="false" />
-    </list>
+    <list default="true" id="91038de0-7b8a-43b1-98bf-60c9019eab0a" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,10 +16,10 @@
     <session id="576424296">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="3" />
-          <entry key="project.open.time.0" value="2" />
+          <entry key="project.closed" value="4" />
+          <entry key="project.open.time.0" value="3" />
           <entry key="project.open.time.5" value="1" />
-          <entry key="project.opened" value="3" />
+          <entry key="project.opened" value="4" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -86,8 +81,9 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds">
-    <option name="y" value="23" />
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="-466" />
+    <option name="y" value="110" />
     <option name="width" value="1280" />
     <option name="height" value="777" />
   </component>
@@ -113,6 +109,11 @@
               <item name="2.CIFAR10_ImageNet" type="b2602c69:ProjectViewProjectNode" />
               <item name="2.CIFAR10_ImageNet" type="462c0819:PsiDirectoryNode" />
               <item name="CIFAR10_data_read" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="2.CIFAR10_ImageNet" type="b2602c69:ProjectViewProjectNode" />
+              <item name="2.CIFAR10_ImageNet" type="462c0819:PsiDirectoryNode" />
+              <item name="tensorflow-models-cifar10" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -210,10 +211,9 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1280" height="777" extended-state="0" />
-    <editor active="true" />
+    <frame x="0" y="23" width="1280" height="777" extended-state="6" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25767368" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.26171243" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />

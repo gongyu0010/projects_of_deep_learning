@@ -10,16 +10,19 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+
 import gzip
 import os
 import re
 import sys
 import tarfile
 
+
 import tensorflow.python.platform
 from six.moves import urllib
 import tensorflow as tf
 import cifar10_input
+
 
 TOWER_NAME = 'tower'
 

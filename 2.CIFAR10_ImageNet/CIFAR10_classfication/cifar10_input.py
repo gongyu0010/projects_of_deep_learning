@@ -20,8 +20,6 @@ from tensorflow.python.platform import gfile
 
 
 IMAGE_SIZE = 24
-
-
 NUM_CLASSES = 10
 NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = 50000
 NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = 10000
@@ -42,6 +40,7 @@ def read_cifar10(filename_queue):
   image_bytes = result.height * result.width * result.depth
   record_bytes = label_bytes + image_bytes
 
+
   reader = tf.FixedLengthRecordReader(record_bytes=record_bytes)
 
   result.key, value = reader.read(filename_queue)
@@ -58,8 +57,7 @@ def read_cifar10(filename_queue):
   return result
 
 
-def _generate_image_and_label_batch(image, label, min_queue_examples,
-                                    batch_size):
+def _generate_image_and_label_batch(image, label, min_queue_examples, batch_size):
 
   num_preprocess_threads = 16
 
@@ -145,15 +143,12 @@ def inputs(eval_data, data_dir, batch_size):
   height = IMAGE_SIZE
   width = IMAGE_SIZE
 
-  resized_image = tf.image.resize_image_with_crop_or_pad(reshaped_image,
-                                                         width, height)
+  resized_image = tf.image.resize_image_with_crop_or_pad(reshaped_image, width, height)
 
   float_image = tf.image.per_image_standardization(resized_image)
 
   min_fraction_of_examples_in_queue = 0.4
 
-  min_queue_examples = int(num_examples_per_epoch *
-                           min_fraction_of_examples_in_queue)
+  min_queue_examples = int(num_examples_per_epoch * min_fraction_of_examples_in_queue)
 
-  return _generate_image_and_label_batch(float_image, read_input.label,
-                                         min_queue_examples, batch_size)
+  return _generate_image_and_label_batch(float_image, read_input.label, min_queue_examples, batch_size)

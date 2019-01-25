@@ -32,6 +32,9 @@ tf.app.flags.DEFINE_integer('batch_size', 128,
 tf.app.flags.DEFINE_string('data_dir', '/tmp/cifar10_data',
                            """Path to the CIFAR-10 data directory.""")
 
+tf.app.flags.DEFINE_boolean('use_fp16', False,
+                            """Train the model using fp16.""")
+
 
 IMAGE_SIZE = cifar10_input.IMAGE_SIZE
 NUM_CLASSES = cifar10_input.NUM_CLASSES
@@ -52,18 +55,22 @@ def _variable_on_cpu(name, shape, initializer):
 
     with tf.device('/cpu:0'):
 
-        var = tf.get_variable(name=name, shape=shape, initializer=initializer)
+        dtype = tf.float16 if FLAGS.use_fp16 else tf.float32
+
+        var = tf.get_variable(name=name, shape=shape, initializer=initializer, dtype=dtype)
 
     return var
 
 
 def _variable_with_weight_decay(name, shape, stddev, wd):
 
-    var = _variable_on_cpu(name, shape, initializer=tf.truncated_normal(stddev=stddev))
+    dtype = tf.float16 if FLAGS.use_fp16 else tf.float32
+
+    var = _variable_on_cpu(name, shape, initializer=tf.truncated_normal_initializer(stddev=stddev, dtype=dtype))
 
     if wd:
 
-        weight_decay = tf.mul(tf.nn.l2_loss(var), wd, name='weight_loss')
+        weight_decay = tf.multiply(tf.nn.l2_loss(var), wd, name='weight_loss')
 
         tf.add_to_collection('losses', weight_decay)
 
@@ -119,7 +126,7 @@ def inference(images):
 
     pool1 = tf.nn.max_pool(conv1, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1], padding='SAME', name='pool1')
 
-    norm1 = tf.nn.lrn(pool1, 4, biases=1.0, alpha=0.001 / 9.0, beta=0.75, name='norm1')
+    norm1 = tf.nn.lrn(pool1, 4, bias=1.0, alpha=0.001 / 9.0, beta=0.75, name='norm1')
 
     with tf.variable_scope('conv2') as scope:
 
@@ -169,7 +176,7 @@ def inference(images):
 
         biases = _variable_on_cpu('biases', [NUM_CLASSES], tf.constant_initializer(0.0))
 
-        softmax_linear = tf.add(tf.matmul(local4, weights) + biases, name=scope.name)
+        softmax_linear = tf.add(tf.matmul(local4, weights), biases, name=scope.name)
 
         _activation_summary(softmax_linear)
 
@@ -191,6 +198,20 @@ def _add_loss_summaries(total_loss):
         tf.summary.scalar(l.op.name, loss_averages.average(l))
 
     return loss_averages_op
+
+
+def loss(logits, labels):
+
+    labels = tf.cast(labels, tf.int64)
+
+    cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
+        labels=labels, logits=logits, name='cross_entropy_per_example')
+
+    cross_entropy_mean = tf.reduce_mean(cross_entropy, name='cross_entropy')
+
+    tf.add_to_collection('losses', cross_entropy_mean)
+
+    return tf.add_n(tf.get_collection('losses'), name='total_loss')
 
 
 def train(total_loss, global_step):
@@ -219,7 +240,7 @@ def train(total_loss, global_step):
 
     for grad, var in grads:
 
-        if grad:
+        if grad is not None:
 
             tf.summary.histogram(var.op.name + '/gradients', grad)
 
@@ -232,3 +253,39 @@ def train(total_loss, global_step):
         train_op = tf.no_op(name='train')
 
     return train_op
+
+
+def maybe_download_and_extract():
+
+    dest_directory = FLAGS.data_dir
+
+    if not os.path.exists(dest_directory):
+
+        os.makedirs(dest_directory)
+
+    filename = DATA_URL.split('/')[-1]
+
+    filepath = os.path.join(dest_directory, filename)
+
+    if not os.path.exists(filepath):
+
+        def _progress(count, block_size, total_size):
+
+            sys.stdout.write('\r>> Downloading %s %.1f%%' % (filename,
+                                                             float(count * block_size) / float(total_size) * 100.0))
+
+            sys.stdout.flush()
+
+        filepath, _ = urllib.request.urlretrieve(DATA_URL, filepath, _progress)
+
+        print()
+
+        statinfo = os.stat(filepath)
+
+        print('Successfully downloaded', filename, statinfo.st_size, 'bytes.')
+
+    extracted_dir_path = os.path.join(dest_directory, 'cifar-10-batches-bin')
+
+    if not os.path.exists(extracted_dir_path):
+
+        tarfile.open(filepath, 'r:gz').extractall(dest_directory)
